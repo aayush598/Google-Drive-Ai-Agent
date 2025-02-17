@@ -1,0 +1,4 @@
+pydrive2
+requests
+python-dotenv
+flask
