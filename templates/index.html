@@ -4,90 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Drive File Categorization</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
-            text-align: center;
-            padding: 50px;
-        }
-        h1 {
-            color: #4CAF50;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 32px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #status {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-        #progress-bar {
-            width: 100%;
-            background-color: #f3f3f3;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        #progress {
-            width: 0;
-            height: 20px;
-            background-color: #4CAF50;
-            border-radius: 5px;
-        }
-        #categorized-data {
-            font-size: 14px;
-            color: #555;
-            text-align: left;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .file {
-            background-color: #fff;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        .file h3 {
-            margin: 0;
-            color: #4CAF50;
-            margin-bottom: 10px;  /* Added margin to create space below the file name */
-        }
-        .categories {
-            font-size: 14px;
-            color: #888;
-            margin-top: 10px; /* Added margin to create space above the categories */
-        }
-        
-        .category {
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 10px;
-            margin-right: 5px;
-            border-radius: 3px;
-        }
-        #loading-message {
-            display: none;
-        }
-        #success-message {
-            display: none;
-            color: green;
-        }
-        #error-message {
-            display: none;
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/css/style.css"> <!-- Link to external CSS -->
 </head>
 <body>
     <h1>Welcome to Google Drive File Categorization</h1>
@@ -109,88 +26,11 @@
         <div id="files-list"></div>
     </div>
 
-    <script>
-        const form = document.getElementById('categorize-form');
-        const loadingMessage = document.getElementById('loading-message');
-        const progressBar = document.getElementById('progress-bar');
-        const progress = document.getElementById('progress');
-        const successMessage = document.getElementById('success-message');
-        const errorMessage = document.getElementById('error-message');
-        const filesList = document.getElementById('files-list');
+    <div id="duplicates">
+        <h2>Duplicate Files:</h2>
+        <div id="duplicate-files-list"></div>
+    </div>
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            
-            // Show status indicators
-            loadingMessage.style.display = 'block';
-            progressBar.style.display = 'block';
-            successMessage.style.display = 'none';
-            errorMessage.style.display = 'none';
-            progress.style.width = '0%';
-
-            try {
-                const response = await fetch('/categorize', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const categorizedData = await response.json();
-
-                // Simulate progress
-                let progressValue = 0;
-                const interval = setInterval(() => {
-                    if (progressValue < 100) {
-                        progressValue += 10;
-                        progress.style.width = progressValue + '%';
-                    } else {
-                        clearInterval(interval);
-                    }
-                }, 500);
-
-                // Hide the loading message and show success message
-                setTimeout(() => {
-                    loadingMessage.style.display = 'none';
-                    successMessage.style.display = 'block';
-                    displayCategorizedFiles(categorizedData);
-                }, 3000); // Simulate delay after completion
-
-            } catch (error) {
-                loadingMessage.style.display = 'none';
-                progressBar.style.display = 'none';
-                errorMessage.style.display = 'block';
-            }
-        });
-
-        function displayCategorizedFiles(data) {
-            filesList.innerHTML = ''; // Clear previous data
-
-            // Iterate through the categorized data and display each file
-            for (const [fileName, categories] of Object.entries(data)) {
-                if (fileName && categories) {
-                    const fileDiv = document.createElement('div');
-                    fileDiv.classList.add('file');
-
-                    const fileNameElement = document.createElement('h3');
-                    fileNameElement.textContent = fileName;
-
-                    const categoriesDiv = document.createElement('div');
-                    categoriesDiv.classList.add('categories');
-                    const categoryArray = categories.split(', ');
-                    categoryArray.forEach(category => {
-                        const categorySpan = document.createElement('span');
-                        categorySpan.classList.add('category');
-                        categorySpan.textContent = category;
-                        categoriesDiv.appendChild(categorySpan);
-                    });
-
-                    fileDiv.appendChild(fileNameElement);
-                    fileDiv.appendChild(categoriesDiv);
-                    filesList.appendChild(fileDiv);
-                }
-            }
-        }
-    </script>
+    <script src="../static/js/script.js"></script> <!-- Link to external JS -->
 </body>
 </html>

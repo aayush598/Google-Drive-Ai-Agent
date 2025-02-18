@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    color: #4CAF50;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#status {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+}
+
+#progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+#progress {
+    width: 0;
+    height: 20px;
+    background-color: #4CAF50;
+    border-radius: 5px;
+}
+
+#categorized-data {
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.file {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.file h3 {
+    margin: 0;
+    color: #4CAF50;
+    margin-bottom: 10px;  /* Added margin to create space below the file name */
+}
+
+.categories {
+    font-size: 14px;
+    color: #888;
+    margin-top: 10px; /* Added margin to create space above the categories */
+}
+
+.category {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+#loading-message {
+    display: none;
+}
+
+#success-message {
+    display: none;
+    color: green;
+}
+
+#error-message {
+    display: none;
+    color: red;
+}
+
+#duplicates {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #888;
+}
+
+.duplicate-file {
+    background-color: #ffcccb;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: left;
+}

@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from fetchFiles import fetch_all_file_names
+from duplicate import find_duplicates
+from deleteFile import delete_files  # Import the delete_files function
 
 app = Flask(__name__)
 
@@ -23,7 +25,7 @@ def categorize_files():
         file_names = file.readlines()
 
     # Get the first 20 file names
-    first_20_files = file_names[:20]
+    first_20_files = file_names[:]
 
     # Step 2: Fetch response from Gemini API using the file names
     api_key = os.getenv('GEMINI_API_KEY')
@@ -32,8 +34,15 @@ def categorize_files():
     # Step 3: Process the response from Gemini
     categorized_data = process_gemini_response(gemini_response)
 
+    duplicates = find_duplicates(file_names=first_20_files)
+
+    # delete_files(duplicates)  # Call the delete_files function
+
     # Step 4: Return the categorized data as JSON
-    return jsonify(categorized_data)
+    return jsonify({
+        'categorized_data': categorized_data,
+        'duplicates': duplicates
+    })
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8080)
