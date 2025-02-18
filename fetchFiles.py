@@ -3,11 +3,10 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from folderStructure import setup_folder_structure
 
-# Connect to SQLite database (or create it if it doesn't exist)
+# Connect to SQLite database
 conn = sqlite3.connect('file_info.db', check_same_thread=False)
 cursor = conn.cursor()
 
-# Create a table to store file information with UNIQUE constraint on file_id
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS files (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,60 +15,41 @@ cursor.execute('''
         mime_type TEXT,
         parent_folder TEXT,
         created_time TEXT,
-        modified_time TEXT
+        modified_time TEXT,
+        is_folder INTEGER DEFAULT 0
     )
 ''')
 conn.commit()
 
 def fetch_all_file_names(output_file='file_names.txt'):
-    """
-    Authenticate with Google Drive using PyDrive2 and fetch all file details.
-    Store the file details in an SQLite database.
-    
-    Args:
-    output_file (str): The name of the output file where the file names will be stored. Default is 'file_names.txt'.
-    
-    Returns:
-    None
-    """
-    # Authenticate using PyDrive2
+    # Authenticate with PyDrive2
     gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()  # Authentication
+    gauth.LocalWebserverAuth()
     drive = GoogleDrive(gauth)
 
     folder_ids = setup_folder_structure(drive)
 
-    # Fetch all files from Google Drive
+    # Fetch files from Google Drive
     file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
 
-    # Open a file to write the file names
+    file_ids = [file_item['id'] for file_item in file_list]
+    cursor.execute("SELECT file_id FROM files WHERE file_id IN ({})".format(','.join('?' * len(file_ids))), file_ids)
+    existing_files = {row[0] for row in cursor.fetchall()}
+
+    # Open the output file to write file names
     with open(output_file, 'w') as file:
         for file_item in file_list:
             file_name = file_item['title']
             file_id = file_item['id']
-            mime_type = file_item['mimeType']
-            parent_folder = file_item['parents'][0]['id'] if 'parents' in file_item else 'No Parent'
-            created_time = file_item['createdDate']
-            modified_time = file_item['modifiedDate']
+            is_folder = 1 if file_item['mimeType'] == 'application/vnd.google-apps.folder' else 0
 
-            # Check if file_id already exists in the database
-            cursor.execute("SELECT file_id FROM files WHERE file_id = ?", (file_id,))
-            existing_file = cursor.fetchone()
-
-            if existing_file is None:  # Only insert if file_id is not already in the database
+            if file_id not in existing_files:
                 cursor.execute('''
-                    INSERT INTO files (file_id, file_name, mime_type, parent_folder, created_time, modified_time)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (file_id, file_name, mime_type, parent_folder, created_time, modified_time))
+                    INSERT INTO files (file_id, file_name, mime_type, parent_folder, created_time, modified_time, is_folder)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (file_id, file_name, file_item['mimeType'], file_item['parents'][0]['id'] if 'parents' in file_item else 'No Parent', file_item['createdDate'], file_item['modifiedDate'], is_folder))
                 conn.commit()
                 print(f"Inserted: {file_name} ({file_id})")
-            else:
-                print(f"Skipped (duplicate): {file_name} ({file_id})")
-
-            # Write the file name to the output file
             file.write(file_name + '\n')
 
     print(f"All file names and details have been saved to SQLite and '{output_file}'.")
-
-# Example usage
-fetch_all_file_names()

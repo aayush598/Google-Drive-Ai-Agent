@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, jsonify
 from gemini_request import fetch_gemini_response
 from process_gemini_response import process_gemini_response
 import os
@@ -7,7 +7,7 @@ load_dotenv()
 
 from fetchFiles import fetch_all_file_names
 from duplicate import find_duplicates
-from deleteFile import delete_files  # Import the delete_files function
+from deleteFile import delete_files_and_folders, get_duplicates
 
 app = Flask(__name__)
 
@@ -17,28 +17,29 @@ def home():
 
 @app.route('/categorize', methods=['POST'])
 def categorize_files():
-    # Fetch files from Google Drive
+    # Fetch files from Google Drive only if not already done
     fetch_all_file_names()
 
-    # Step 1: Read the first 20 file names from 'file_names.txt'
+    # Step 1: Read file names directly from 'file_names.txt'
     with open('file_names.txt', 'r') as file:
-        file_names = file.readlines()
+        file_names = file.readlines()[:]
 
-    # Get the first 20 file names
-    first_20_files = file_names[:]
-
-    # Step 2: Fetch response from Gemini API using the file names
+    # Step 2: Fetch categorization response from Gemini API
     api_key = os.getenv('GEMINI_API_KEY')
-    gemini_response = fetch_gemini_response(first_20_files, api_key)
+    gemini_response = fetch_gemini_response(file_names, api_key)
 
-    # Step 3: Process the response from Gemini
+    # Step 3: Process response and find duplicates
     categorized_data = process_gemini_response(gemini_response)
+    duplicates = find_duplicates()
 
-    duplicates = find_duplicates(file_names=first_20_files)
+    duplicates2 = get_duplicates()
+    if duplicates:
+        # Delete duplicate files and folders from Google Drive and database
+        delete_files_and_folders(duplicates)
+    else:
+        print("No duplicates found.")
 
-    # delete_files(duplicates)  # Call the delete_files function
-
-    # Step 4: Return the categorized data as JSON
+    # Step 4: Return results as JSON
     return jsonify({
         'categorized_data': categorized_data,
         'duplicates': duplicates

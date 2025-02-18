@@ -18,8 +18,9 @@ def find_duplicates(file_names=None, file_name='file_names.txt'):
     file_count = {}
     for file in file_names:
         file_count[file] = file_count.get(file, 0) + 1
-    
+
     # Filter out files that have more than one occurrence (duplicates)
     duplicates = {file: count for file, count in file_count.items() if count > 1}
+
     
     return duplicates
