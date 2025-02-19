@@ -107,3 +107,62 @@ button:hover {
     border-radius: 5px;
     text-align: left;
 }
+
+form {
+    margin: 20px 0;
+}
+
+earch-section {
+    background: white;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#search-category {
+    width: 80%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+}
+
+#search-category:focus {
+    border-color: #4CAF50;
+}
+
+#search-form button {
+    background-color: #007BFF;
+    margin-top: 10px;
+}
+
+#search-form button:hover {
+    background-color: #0056b3;
+}
+
+#search-results {
+    margin-top: 20px;
+    text-align: left;
+}
+
+#search-results h3 {
+    color: #007BFF;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background: #f8f8f8;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #4CAF50;
+}
