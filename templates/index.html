@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>Welcome to Google Drive File Categorization</h1>
+
     <form id="categorize-form">
         <button type="submit">Categorize My Google Drive Files</button>
     </form>
@@ -31,6 +32,45 @@
         <div id="duplicate-files-list"></div>
     </div>
 
+    <!-- Search Feature -->
+    <div id="search-section">
+        <h2>Search Files by Category</h2>
+        <form id="search-form">
+            <input type="text" id="search-category" placeholder="Enter category..." required>
+            <button type="submit">Search</button>
+        </form>
+        <div id="search-results"></div>
+    </div>
+
     <script src="../static/js/script.js"></script> <!-- Link to external JS -->
+    <script>
+        document.getElementById("search-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let categoryInput = document.getElementById("search-category").value;
+
+            fetch("/search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ category: categoryInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let resultsDiv = document.getElementById("search-results");
+                resultsDiv.innerHTML = "<h3>Matching Files:</h3>";
+
+                if (data.files.length > 0) {
+                    let list = "<ul>";
+                    data.files.forEach(file => {
+                        list += `<li>${file}</li>`;
+                    });
+                    list += "</ul>";
+                    resultsDiv.innerHTML += list;
+                } else {
+                    resultsDiv.innerHTML += "<p>No matching files found.</p>";
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
 </body>
 </html>

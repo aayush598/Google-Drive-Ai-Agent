@@ -8,6 +8,7 @@ load_dotenv()
 from fetchFiles import fetch_all_file_names
 from duplicate import find_duplicates
 from deleteFile import delete_files_and_folders, get_duplicates
+from search import search_files_by_category
 
 app = Flask(__name__)
 
@@ -44,6 +45,14 @@ def categorize_files():
         'categorized_data': categorized_data,
         'duplicates': duplicates
     })
+
+@app.route('/search', methods=['POST'])
+def search():
+    data = request.get_json()
+    category_input = data.get('category', '')
+    files = search_files_by_category(category_input)
+    return jsonify({'files': files})
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8080)

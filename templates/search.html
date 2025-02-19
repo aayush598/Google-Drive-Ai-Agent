@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Search Files by Category</h2>
+    <form action="/search" method="post">
+        <input type="text" name="category" placeholder="Enter category" required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if files %}
+        <h3>Matching Files:</h3>
+        <ul>
+            {% for file in files %}
+                <li>{{ file }}</li>
+            {% endfor %}
+        </ul>
+    {% elif files is not none %}
+        <p>No matching files found.</p>
+    {% endif %}
+</body>
+</html>
