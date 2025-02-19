@@ -9,8 +9,12 @@ from fetchFiles import fetch_all_file_names
 from duplicate import find_duplicates
 from deleteFile import delete_files_and_folders, get_duplicates
 from search import search_files_by_category
+from permissions import permissions_bp
 
 app = Flask(__name__)
+
+# Register blueprints
+app.register_blueprint(permissions_bp)
 
 @app.route('/')
 def home():

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Permissions</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #007BFF;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .fetch-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .fetch-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Drive File Permissions</h1>
+
+    <button class="fetch-button" onclick="fetchPermissions()">Update Permissions</button>
+
+    <table>
+        <tr>
+            <th>File Name</th>
+            <th>Email Address</th>
+            <th>Role</th>
+            <th>Type</th>
+        </tr>
+        {% for file_name, email, role, perm_type in permissions %}
+        <tr>
+            <td>{{ file_name }}</td>
+            <td>{{ email }}</td>
+            <td>{{ role }}</td>
+            <td>{{ perm_type }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        function fetchPermissions() {
+            fetch("/fetch-permissions")
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
