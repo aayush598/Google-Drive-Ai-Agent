@@ -66,9 +66,10 @@ def fetch_content():
 
 @app.route('/move-files')
 def move_files():
-    """API endpoint to move PDF and PPT files to the Documents folder."""
+    """API endpoint to move PDF and PPT files to the Documents folder and render the result."""
     result = move_files_to_documents()
-    return jsonify(result)
+    return render_template("moveFiles.html", files_moved=result["files_moved"])
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8080)

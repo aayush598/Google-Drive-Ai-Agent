@@ -42,7 +42,7 @@ def move_files_to_documents():
     conn.close()
     
     if not files_data:
-        return {"message": "No PDF or PPT files found in the database."}
+        return {"message": "No PDF or PPT files found in the database.", "files_moved": []}
     
     drive = authenticate_drive()
     documents_folder_id = get_documents_folder_id(drive)
