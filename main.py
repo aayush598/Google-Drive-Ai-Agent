@@ -10,7 +10,7 @@ from duplicate import find_duplicates
 from deleteFile import delete_files_and_folders, get_duplicates
 from search import search_files_by_category
 from permissions import permissions_bp
-from fetchContent import fetch_file_content
+from fetchContent import fetch_all_file_contents
 from moveFile import move_files_to_documents 
 
 app = Flask(__name__)
@@ -61,8 +61,8 @@ def search():
 
 @app.route("/fetch-content")
 def fetch_content():
-    file_name, content = fetch_file_content()
-    return render_template("fetchContent.html", file_name=file_name, content=content)
+    files = fetch_all_file_contents()  # Function should return a list of file data
+    return render_template("fetchContent.html", files=files)
 
 @app.route('/move-files')
 def move_files():

@@ -5,13 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Content Viewer</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
-        h2 { color: #333; }
-        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            margin: auto;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .accordion {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .accordion-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            overflow: hidden;
+            background: white;
+        }
+        .accordion-header {
+            background: #007BFF;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accordion-header:hover {
+            background: #0056b3;
+        }
+        .accordion-content {
+            background: #f4f4f4;
+            padding: 15px;
+            display: none;
+            text-align: left;
+            max-height: 400px; /* Set max height for scrolling */
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .home-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .home-link:hover {
+            background: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h2>File Content: {{ file_name }}</h2>
-    <pre>{{ content }}</pre>
+
+<div class="container">
+    <h2>File Content Viewer</h2>
+
+    <div class="accordion">
+        {% for file in files %}
+        <div class="accordion-item">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                {{ file.file_name }}
+                <span>+</span>
+            </button>
+            <div class="accordion-content">
+                <pre>{{ file.content }}</pre>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="/" class="home-link">Go Back to Home</a>
+</div>
+
+<script>
+    function toggleAccordion(button) {
+        let content = button.nextElementSibling;
+        let isVisible = content.style.display === "block";
+        
+        document.querySelectorAll(".accordion-content").forEach(item => item.style.display = "none");
+        document.querySelectorAll(".accordion-header span").forEach(span => span.textContent = "+");
+
+        if (!isVisible) {
+            content.style.display = "block";
+            button.querySelector("span").textContent = "-";
+        }
+    }
+</script>
+
 </body>
 </html>
