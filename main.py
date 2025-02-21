@@ -10,6 +10,8 @@ from duplicate import find_duplicates
 from deleteFile import delete_files_and_folders, get_duplicates
 from search import search_files_by_category
 from permissions import permissions_bp
+from fetchContent import fetch_file_content
+from moveFile import move_files_to_documents 
 
 app = Flask(__name__)
 
@@ -27,8 +29,8 @@ def categorize_files():
 
     # Step 1: Read file names directly from 'file_names.txt'
     with open('file_names.txt', 'r') as file:
-        file_names = file.readlines()[:]
-
+        file_names = file.readlines()
+    print(file_names)
     # Step 2: Fetch categorization response from Gemini API
     api_key = os.getenv('GEMINI_API_KEY')
     gemini_response = fetch_gemini_response(file_names, api_key)
@@ -57,6 +59,16 @@ def search():
     files = search_files_by_category(category_input)
     return jsonify({'files': files})
 
+@app.route("/fetch-content")
+def fetch_content():
+    file_name, content = fetch_file_content()
+    return render_template("fetchContent.html", file_name=file_name, content=content)
+
+@app.route('/move-files')
+def move_files():
+    """API endpoint to move PDF and PPT files to the Documents folder."""
+    result = move_files_to_documents()
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8080)
