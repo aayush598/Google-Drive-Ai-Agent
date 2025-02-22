@@ -12,11 +12,13 @@ from search import search_files_by_category
 from permissions import permissions_bp
 from fetchContent import fetch_all_file_contents
 from moveFile import move_files_to_documents 
+from renameFile import rename_bp
 
 app = Flask(__name__)
 
 # Register blueprints
 app.register_blueprint(permissions_bp)
+app.register_blueprint(rename_bp)
 
 @app.route('/')
 def home():

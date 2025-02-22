@@ -7,10 +7,13 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from fetchContent import fetch_all_file_contents
 import re
+from flask import Blueprint, jsonify,render_template
+
 
 # Load environment variables
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
+rename_bp = Blueprint('rename', __name__)
 
 # Authenticate Google Drive
 def authenticate_drive():
@@ -22,8 +25,11 @@ def authenticate_drive():
 def fetch_gemini_rename(file_name, file_content, api_key):
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
     
+    file_base, file_extension = os.path.splitext(file_name)  # Extract base name and extension
+    file_extension = file_extension.lstrip('.')  # Remove leading dot
+    
     prompt = f"""
-    Based on the content of the following file, suggest a concise and meaningful file name (max 5 words).
+    Based on the content of the following file, suggest a concise and meaningful file name (max 2 words).
     Use underscores instead of spaces, and retain the original file format.
     Provide results in valid JSON format: {{"old_name": "<old_filename>", "new_name": "<new_filename>"}}.
     File: {file_name}
@@ -42,7 +48,11 @@ def fetch_gemini_rename(file_name, file_content, api_key):
         if json_match:
             result_text = json_match.group(1)
         
-        return json.loads(result_text)
+        rename_data = json.loads(result_text)
+        new_name = rename_data["new_name"].replace(" ", "_")  # Replace spaces with underscores
+        rename_data["new_name"] = f"{new_name}.{file_extension}"  # Ensure correct file extension
+        
+        return rename_data
     except (requests.exceptions.RequestException, json.JSONDecodeError, KeyError) as e:
         print(f"Error: {e}")
         return None
@@ -55,14 +65,12 @@ def rename_file(drive, file_id, new_name):
     file.Upload()
     print(f"Renamed file to: {new_name}")
 
-if __name__ == "__main__":
+@rename_bp.route('/rename-files')
+def rename_files_endpoint():
     drive = authenticate_drive()
-    
     file_data = fetch_all_file_contents()
-    
     conn = sqlite3.connect("file_info.db")
     cursor = conn.cursor()
-    
     renamed_files = []
     
     for file in file_data:
@@ -83,5 +91,4 @@ if __name__ == "__main__":
                 conn.commit()
     
     conn.close()
-    
-    print("Renaming completed:", json.dumps(renamed_files, indent=4))
+    return render_template("renameFile.html", renamed_files=renamed_files)
