@@ -6,10 +6,7 @@ from PyPDF2 import PdfReader
 from docx import Document
 from pptx import Presentation
 
-# Authenticate with Google Drive
-gauth = GoogleAuth()
-gauth.LocalWebserverAuth()  
-drive = GoogleDrive(gauth)
+
 
 # Database path
 db_path = "file_info.db"
@@ -20,6 +17,11 @@ def fetch_all_file_contents():
     downloads them from Google Drive, and extracts their content.
     Returns a list of dictionaries with file_name and content.
     """
+    # Authenticate with Google Drive
+    gauth = GoogleAuth()
+    gauth.LocalWebserverAuth()  
+    drive = GoogleDrive(gauth)
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
@@ -31,13 +33,13 @@ def fetch_all_file_contents():
 
     for file_data in files:
         file_id, file_name, mime_type = file_data
-        content = extract_content(file_id, file_name, mime_type)
+        content = extract_content(file_id, file_name, mime_type,drive)
         file_contents.append({"file_name": file_name, "content": content})
 
     conn.close()
     return file_contents
 
-def extract_content(file_id, file_name, mime_type):
+def extract_content(file_id, file_name, mime_type,drive):
     """
     Downloads the file from Google Drive and extracts its content
     based on the file type.
