@@ -1,32 +1,28 @@
-import requests
+import os
 import json
 import sqlite3
-import os
+import re
+import requests
 from dotenv import load_dotenv
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-from fetchContent import fetch_all_file_contents
-import re
-from flask import Blueprint, jsonify,render_template
-
+from flask import Blueprint, jsonify, render_template
+from controllers.fetch_content import fetch_all_file_contents
 
 # Load environment variables
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 rename_bp = Blueprint('rename', __name__)
 
-# Authenticate Google Drive
 def authenticate_drive():
     gauth = GoogleAuth()
     gauth.LocalWebserverAuth()
     return GoogleDrive(gauth)
 
-# Send a single file's content to Gemini API for renaming
 def fetch_gemini_rename(file_name, file_content, api_key):
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
-    
-    file_base, file_extension = os.path.splitext(file_name)  # Extract base name and extension
-    file_extension = file_extension.lstrip('.')  # Remove leading dot
+    file_base, file_extension = os.path.splitext(file_name)
+    file_extension = file_extension.lstrip('.')
     
     prompt = f"""
     Based on the content of the following file, suggest a concise and meaningful file name (max 2 words).
@@ -37,27 +33,25 @@ def fetch_gemini_rename(file_name, file_content, api_key):
     """
     
     request_body = {"contents": [{"parts": [{"text": prompt}]}]}
-
+    
     try:
         response = requests.post(url, headers={'Content-Type': 'application/json'}, json=request_body)
         response.raise_for_status()
         result_text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
         
-        # Extract JSON from Markdown blocks if present
         json_match = re.search(r'```json\n(.*?)\n```', result_text, re.DOTALL)
         if json_match:
             result_text = json_match.group(1)
         
         rename_data = json.loads(result_text)
-        new_name = rename_data["new_name"].replace(" ", "_")  # Replace spaces with underscores
-        rename_data["new_name"] = f"{new_name}.{file_extension}"  # Ensure correct file extension
+        new_name = rename_data["new_name"].replace(" ", "_")
+        rename_data["new_name"] = f"{new_name}.{file_extension}"
         
         return rename_data
     except (requests.exceptions.RequestException, json.JSONDecodeError, KeyError) as e:
         print(f"Error: {e}")
         return None
 
-# Rename a file in Google Drive
 def rename_file(drive, file_id, new_name):
     file = drive.CreateFile({'id': file_id})
     file.FetchMetadata()

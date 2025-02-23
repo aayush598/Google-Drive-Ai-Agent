@@ -28,7 +28,6 @@ gauth = GoogleAuth()
 gauth.LocalWebserverAuth()
 drive = GoogleDrive(gauth)
 
-
 def fetch_permissions(file_id):
     """Fetches permissions of a file from Google Drive."""
     try:
@@ -38,7 +37,6 @@ def fetch_permissions(file_id):
     except Exception as e:
         print(f"Error fetching permissions for {file_id}: {e}")
         return []
-
 
 @permissions_bp.route("/fetch-permissions", methods=["GET"])
 def fetch_all_permissions():
@@ -60,7 +58,6 @@ def fetch_all_permissions():
             conn.commit()
 
     return jsonify({"message": "Permissions updated successfully!"})
-
 
 @permissions_bp.route("/view-permissions", methods=["GET"])
 def view_permissions():

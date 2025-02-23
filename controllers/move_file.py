@@ -1,11 +1,11 @@
+import sqlite3
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-import sqlite3
 
 def authenticate_drive():
     """Authenticate with Google Drive and return a drive instance."""
     gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()  
+    gauth.LocalWebserverAuth()
     return GoogleDrive(gauth)
 
 def get_documents_folder_id(drive):
@@ -26,12 +26,12 @@ def get_documents_folder_id(drive):
 
 def move_files_to_documents():
     """Move all PDF and PPT files inside the 'Documents' folder in Google Drive."""
-    db_path = "file_info.db"  # Change this to your actual database path
+    db_path = "file_info.db"
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
+    
     cursor.execute("""
-        SELECT file_id, file_name, mime_type FROM files 
+        SELECT file_id, file_name FROM files 
         WHERE mime_type IN (
             'application/pdf', 
             'application/vnd.openxmlformats-officedocument.presentationml.presentation'
@@ -46,13 +46,13 @@ def move_files_to_documents():
     
     drive = authenticate_drive()
     documents_folder_id = get_documents_folder_id(drive)
-
+    
     moved_files = []
     
-    for file_id, file_name, mime_type in files_data:
+    for file_id, file_name in files_data:
         file = drive.CreateFile({'id': file_id})
         file['parents'] = [{'id': documents_folder_id}]
         file.Upload()
         moved_files.append(file_name)
-
+    
     return {"message": f"Moved {len(moved_files)} files to Documents folder.", "files_moved": moved_files}

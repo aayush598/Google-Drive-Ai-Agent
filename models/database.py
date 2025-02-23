@@ -1,0 +1,42 @@
+import sqlite3
+
+def connect_db():
+    """Creates and returns a connection to the SQLite database."""
+    return sqlite3.connect('file_info.db', check_same_thread=False)
+
+def initialize_database():
+    """Creates necessary tables if they do not exist."""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_id TEXT UNIQUE,
+            file_name TEXT,
+            mime_type TEXT,
+            parent_folder TEXT,
+            created_time TEXT,
+            modified_time TEXT,
+            is_folder INTEGER DEFAULT 0,
+            category TEXT
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS permissions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_id TEXT,
+            email_address TEXT,
+            role TEXT,
+            type TEXT,
+            UNIQUE(file_id, email_address)
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+if __name__ == "__main__":
+    initialize_database()
+    print("Database initialized successfully.")

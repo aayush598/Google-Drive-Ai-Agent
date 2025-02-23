@@ -4,68 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moved Files</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-        h2 {
-            color: #333;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            background: #e3f2fd;
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .no-files {
-            color: red;
-            font-weight: bold;
-        }
-        .home-link {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 15px;
-            background: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .home-link:hover {
-            background: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-
-<div class="container">
-    <h2>Moved Files to Documents</h2>
-    {% if files_moved %}
-        <ul>
-            {% for file in files_moved %}
-                <li>{{ file }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="no-files">No PDF or PPT files found to move.</p>
-    {% endif %}
-    <a href="/" class="home-link">Go Back to Home</a>
-</div>
-
+    <div class="container">
+        <h2>Moved Files to Documents</h2>
+        {% if files_moved %}
+            <ul>
+                {% for file in files_moved %}
+                    <li>{{ file }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-files">No PDF or PPT files found to move.</p>
+        {% endif %}
+        <a href="/" class="home-link">Go Back to Home</a>
+    </div>
 </body>
 </html>

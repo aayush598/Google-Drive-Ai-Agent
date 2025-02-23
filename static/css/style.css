@@ -3,73 +3,97 @@ body {
     background-color: #f7f7f7;
     color: #333;
     text-align: center;
-    padding: 50px;
+    padding: 20px;
 }
 
 h1 {
     color: #4CAF50;
+    margin-bottom: 20px;
 }
 
 button {
     background-color: #4CAF50;
     color: white;
-    padding: 15px 32px;
+    padding: 10px 20px;
     font-size: 16px;
     border: none;
     cursor: pointer;
-    margin-top: 20px;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #45a049;
 }
 
-#status {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #333;
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    margin: auto;
 }
 
-#progress-bar {
-    width: 100%;
-    background-color: #f3f3f3;
+#status, #categorized-data, #duplicates {
+    display: none;
+}
+
+.accordion-item {
+    border: 1px solid #ddd;
     border-radius: 5px;
-    margin-top: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: white;
 }
 
-#progress {
-    width: 0;
-    height: 20px;
-    background-color: #4CAF50;
-    border-radius: 5px;
-}
-
-#categorized-data {
-    font-size: 14px;
-    color: #555;
+.accordion-header {
+    background: #007BFF;
+    color: white;
+    padding: 12px;
     text-align: left;
-    display: inline-block;
-    margin-top: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    width: 100%;
+}
+
+.accordion-header:hover {
+    background: #0056b3;
+}
+
+.accordion-content {
+    background: #f4f4f4;
+    padding: 15px;
+    display: none;
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .file {
     background-color: #fff;
-    margin: 10px 0;
     padding: 10px;
+    margin: 10px 0;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: left;
 }
 
 .file h3 {
     margin: 0;
     color: #4CAF50;
-    margin-bottom: 10px;  /* Added margin to create space below the file name */
+    margin-bottom: 5px;
 }
 
 .categories {
     font-size: 14px;
     color: #888;
-    margin-top: 10px; /* Added margin to create space above the categories */
 }
 
 .category {
@@ -80,26 +104,6 @@ button:hover {
     border-radius: 3px;
 }
 
-#loading-message {
-    display: none;
-}
-
-#success-message {
-    display: none;
-    color: green;
-}
-
-#error-message {
-    display: none;
-    color: red;
-}
-
-#duplicates {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #888;
-}
-
 .duplicate-file {
     background-color: #ffcccb;
     padding: 10px;
@@ -108,19 +112,13 @@ button:hover {
     text-align: left;
 }
 
-form {
-    margin: 20px 0;
-}
-
-earch-section {
+.search-section {
     background: white;
     padding: 20px;
-    margin-top: 30px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: auto;
 }
 
 #search-category {

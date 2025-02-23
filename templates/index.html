@@ -4,72 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Drive File Categorization</title>
-    <link rel="stylesheet" href="../static/css/style.css"> <!-- Link to external CSS -->
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/script.js" defer></script>
 </head>
 <body>
-    <h1>Welcome to Google Drive File Categorization</h1>
+    <div class="container">
+        <h1>Welcome to Google Drive File Categorization</h1>
 
-    <form id="categorize-form">
-        <button type="submit">Categorize My Google Drive Files</button>
-    </form>
-
-    <div id="status">
-        <p id="loading-message">Categorizing your files... Please wait.</p>
-        <div id="progress-bar" style="display: none;">
-            <div id="progress"></div>
-        </div>
-        <p id="success-message">Categorization Completed Successfully!</p>
-        <p id="error-message">An error occurred while categorizing your files.</p>
-    </div>
-
-    <div id="categorized-data">
-        <h2>Categorized Files:</h2>
-        <div id="files-list"></div>
-    </div>
-
-    <div id="duplicates">
-        <h2>Duplicate Files:</h2>
-        <div id="duplicate-files-list"></div>
-    </div>
-
-    <!-- Search Feature -->
-    <div id="search-section">
-        <h2>Search Files by Category</h2>
-        <form id="search-form">
-            <input type="text" id="search-category" placeholder="Enter category..." required>
-            <button type="submit">Search</button>
+        <form id="categorize-form">
+            <button type="submit">Categorize My Google Drive Files</button>
         </form>
-        <div id="search-results"></div>
+
+        <div id="status" style="display: none;">
+            <p id="loading-message" style="display: none;">Categorizing your files... Please wait.</p>
+            <div id="progress-bar" style="display: none;">
+                <div id="progress"></div>
+            </div>
+            <p id="success-message" style="display: none;">Categorization Completed Successfully!</p>
+            <p id="error-message" style="display: none;">An error occurred while categorizing your files.</p>
+        </div>
+
+        <div id="categorized-data" style="display: none;">
+            <h2>Categorized Files:</h2>
+            <div id="files-list"></div>
+        </div>
+
+        <div id="duplicates" style="display: none;">
+            <h2>Duplicate Files:</h2>
+            <div id="duplicate-files-list"></div>
+        </div>
+
+        <div id="search-section">
+            <h2>Search Files by Category</h2>
+            <form id="search-form">
+                <input type="text" id="search-category" placeholder="Enter category..." required>
+                <button type="submit">Search</button>
+            </form>
+            <div id="search-results"></div>
+        </div>
     </div>
 
-    <script src="../static/js/script.js"></script> <!-- Link to external JS -->
     <script>
-        document.getElementById("search-form").addEventListener("submit", function(event) {
+        document.getElementById("categorize-form").addEventListener("submit", async function(event) {
             event.preventDefault();
-            let categoryInput = document.getElementById("search-category").value;
-
-            fetch("/search", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ category: categoryInput })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let resultsDiv = document.getElementById("search-results");
-                resultsDiv.innerHTML = "<h3>Matching Files:</h3>";
-
-                if (data.files.length > 0) {
-                    let list = "<ul>";
-                    data.files.forEach(file => {
-                        list += `<li>${file}</li>`;
-                    });
-                    list += "</ul>";
-                    resultsDiv.innerHTML += list;
-                } else {
-                    resultsDiv.innerHTML += "<p>No matching files found.</p>";
+            document.getElementById("status").style.display = "block";
+            document.getElementById("loading-message").style.display = "block";
+            
+            try {
+                const response = await fetch("/categorize", { method: "POST" });
+                const result = await response.json();
+                
+                document.getElementById("loading-message").style.display = "none";
+                document.getElementById("success-message").style.display = "block";
+                document.getElementById("categorized-data").style.display = "block";
+                
+                const filesList = document.getElementById("files-list");
+                filesList.innerHTML = "";
+                for (const [file, categories] of Object.entries(result.categorized_data)) {
+                    const div = document.createElement("div");
+                    div.textContent = `${file}: ${categories}`;
+                    filesList.appendChild(div);
                 }
-            })
-            .catch(error => console.error("Error:", error));
+            } catch (error) {
+                document.getElementById("loading-message").style.display = "none";
+                document.getElementById("error-message").style.display = "block";
+            }
         });
     </script>
 </body>

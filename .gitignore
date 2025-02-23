@@ -1,8 +1,6 @@
-__pycache__
-__pycache__/
 .env
-drivetest3.ipynb
 client_secrets.json
-file_names.txt
-./client_secrets.json
-/client_secrets.json
+routes/__pycache__
+__pycache__
+*.pdf
+*.txt
