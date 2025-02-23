@@ -1,6 +1,3 @@
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
-
 def create_folder(drive, folder_name, parent_folder_id=None):
     """
     Create a folder in Google Drive if it doesn't already exist.
@@ -35,5 +32,3 @@ def setup_folder_structure(drive):
         folder_id = create_folder(drive, folder)
         folder_ids[folder] = folder_id
         print(f"Folder '{folder}' is ready with ID {folder_id}")
-    
-    return folder_ids

@@ -1,7 +1,5 @@
 import sqlite3
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, jsonify, render_template
 
 # Flask Blueprint for permissions
 permissions_bp = Blueprint('permissions', __name__)
@@ -23,12 +21,7 @@ cursor.execute('''
 ''')
 conn.commit()
 
-# Authenticate with PyDrive2
-gauth = GoogleAuth()
-gauth.LocalWebserverAuth()
-drive = GoogleDrive(gauth)
-
-def fetch_permissions(file_id):
+def fetch_permissions(file_id,drive):
     """Fetches permissions of a file from Google Drive."""
     try:
         file = drive.CreateFile({'id': file_id})
@@ -39,13 +32,13 @@ def fetch_permissions(file_id):
         return []
 
 @permissions_bp.route("/fetch-permissions", methods=["GET"])
-def fetch_all_permissions():
+def fetch_all_permissions(drive):
     """Fetches permissions for all files and stores them in SQLite."""
     cursor.execute("SELECT file_id FROM files")
     file_ids = [row[0] for row in cursor.fetchall()]
 
     for file_id in file_ids:
-        permissions = fetch_permissions(file_id)
+        permissions = fetch_permissions(file_id,drive)
         for permission in permissions:
             email = permission.get('emailAddress', 'N/A')
             role = permission.get('role', 'N/A')

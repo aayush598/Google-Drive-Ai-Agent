@@ -6,12 +6,12 @@ from controllers.duplicate import find_duplicates
 from controllers.deleteFile import delete_files_and_folders
 from controllers.fetch_files import fetch_all_file_names
 
-def categorize_files():
+def categorize_files(drive):
     """
     Fetches file names, categorizes them using Gemini AI, updates the database,
     and removes duplicates if found.
     """
-    fetch_all_file_names()  # Ensure file names are up to date
+    fetch_all_file_names(drive)  # Ensure file names are up to date
 
     # Read file names from the database
     conn = sqlite3.connect('file_info.db')
@@ -29,7 +29,7 @@ def categorize_files():
 
     duplicates = find_duplicates()
     if duplicates:
-        delete_files_and_folders(duplicates)
+        delete_files_and_folders(duplicates,drive)
 
     return {
         'categorized_data': categorized_data,

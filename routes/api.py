@@ -6,6 +6,7 @@ from controllers.search import search_files_by_category
 from controllers.move_file import move_files_to_documents
 from controllers.rename_file import rename_files_endpoint
 from controllers.permissions import fetch_all_permissions, view_permissions
+from services.auth import drive
 
 api_bp = Blueprint('api', __name__)
 
@@ -15,13 +16,13 @@ def home():
 
 @api_bp.route('/categorize', methods=['POST'])
 def categorize():
-    result = categorize_files()
+    result = categorize_files(drive)
     print(f"Categorized result : {result}")
     return jsonify(result)
 
 @api_bp.route('/fetch-content', methods=['GET'])
 def fetch_content():
-    files = fetch_all_file_contents()
+    files = fetch_all_file_contents(drive)
     return render_template('fetchContent.html', files=files)
 
 @api_bp.route('/fetch-files', methods=['GET'])
@@ -48,7 +49,7 @@ def rename_files():
 
 @api_bp.route('/fetch-permissions', methods=['GET'])
 def fetch_permissions():
-    return fetch_all_permissions()
+    return fetch_all_permissions(drive)
 
 @api_bp.route('/view-permissions')
 def view_permissions_page():

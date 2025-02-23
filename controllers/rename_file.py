@@ -4,20 +4,14 @@ import sqlite3
 import re
 import requests
 from dotenv import load_dotenv
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, render_template
 from controllers.fetch_content import fetch_all_file_contents
+from services.auth import drive
 
 # Load environment variables
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 rename_bp = Blueprint('rename', __name__)
-
-def authenticate_drive():
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()
-    return GoogleDrive(gauth)
 
 def fetch_gemini_rename(file_name, file_content, api_key):
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
@@ -61,7 +55,6 @@ def rename_file(drive, file_id, new_name):
 
 @rename_bp.route('/rename-files')
 def rename_files_endpoint():
-    drive = authenticate_drive()
     file_data = fetch_all_file_contents()
     conn = sqlite3.connect("file_info.db")
     cursor = conn.cursor()

@@ -1,18 +1,13 @@
 import sqlite3
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
 from services.folder_structure import setup_folder_structure
 
 db_path = "file_info.db"
 
-def fetch_all_file_names():
+def fetch_all_file_names(drive):
     """
     Fetches file details from Google Drive and stores them in the database.
     """
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()
-    drive = GoogleDrive(gauth)
-    folder_ids = setup_folder_structure(drive)
+    setup_folder_structure(drive)
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()

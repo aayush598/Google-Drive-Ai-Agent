@@ -1,4 +1,3 @@
-import sqlite3
 from models.database import connect_db
 
 def insert_file(file_id, file_name, mime_type, parent_folder, created_time, modified_time, is_folder, category=None):

@@ -1,6 +1,8 @@
 .env
 client_secrets.json
-routes/__pycache__
+credentials.json
+*/__pycache__
+config
 __pycache__
 *.pdf
 *.txt

@@ -1,12 +1,5 @@
 import sqlite3
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
-
-def authenticate_drive():
-    """Authenticate with Google Drive and return a drive instance."""
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()
-    return GoogleDrive(gauth)
+from services.auth import drive
 
 def get_documents_folder_id(drive):
     """Get the folder ID of 'Documents' in Google Drive. If not found, create one."""
@@ -44,7 +37,6 @@ def move_files_to_documents():
     if not files_data:
         return {"message": "No PDF or PPT files found in the database.", "files_moved": []}
     
-    drive = authenticate_drive()
     documents_folder_id = get_documents_folder_id(drive)
     
     moved_files = []

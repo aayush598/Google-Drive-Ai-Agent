@@ -1,16 +1,6 @@
 import sqlite3
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
 
-def authenticate_drive():
-    """Authenticate with Google Drive and return a drive instance."""
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()
-    return GoogleDrive(gauth)
-
-def delete_files_and_folders(duplicates):
-    """Deletes duplicate files and folders from Google Drive and the database."""
-    drive = authenticate_drive()
+def delete_files_and_folders(duplicates,drive):
     conn = sqlite3.connect('file_info.db')
     cursor = conn.cursor()
     

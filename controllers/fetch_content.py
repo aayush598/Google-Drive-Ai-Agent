@@ -1,6 +1,5 @@
 import sqlite3
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
+from services.auth import drive
 from PyPDF2 import PdfReader
 from docx import Document
 from pptx import Presentation
@@ -14,10 +13,6 @@ def fetch_all_file_contents():
     downloads them from Google Drive, and extracts their content.
     Returns a list of dictionaries with file_name and content.
     """
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()
-    drive = GoogleDrive(gauth)
-
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("""
