@@ -3,7 +3,13 @@ from services.auth import drive
 from PyPDF2 import PdfReader
 from docx import Document
 from pptx import Presentation
+from services.gemini_request import fetch_gemini_sensitive_analysis
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+API_KEY = os.getenv("GEMINI_API_KEY")
 # Database path
 db_path = "file_info.db"
 
@@ -29,6 +35,9 @@ def fetch_all_file_contents():
     file_contents = []
     for file_id, file_name, mime_type in files:
         content = extract_content(file_id, file_name, mime_type, drive)
+        sensitive_analysis = fetch_gemini_sensitive_analysis(file_name, content, API_KEY)
+        if sensitive_analysis and sensitive_analysis.get("sensitive"):
+            print(f"Sensitive content detected in {file_name}: {sensitive_analysis['description']}")
         file_contents.append({"file_name": file_name, "content": content})
     
     return file_contents

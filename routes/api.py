@@ -7,6 +7,7 @@ from controllers.move_file import move_files_to_documents
 from controllers.rename_file import rename_files_endpoint
 from controllers.permissions import fetch_all_permissions, view_permissions
 from services.auth import drive
+import sqlite3
 
 api_bp = Blueprint('api', __name__)
 
@@ -22,7 +23,7 @@ def categorize():
 
 @api_bp.route('/fetch-content', methods=['GET'])
 def fetch_content():
-    files = fetch_all_file_contents(drive)
+    files = fetch_all_file_contents()
     return render_template('fetchContent.html', files=files)
 
 @api_bp.route('/fetch-files', methods=['GET'])
@@ -54,3 +55,15 @@ def fetch_permissions():
 @api_bp.route('/view-permissions')
 def view_permissions_page():
     return view_permissions()
+
+@api_bp.route('/sensitive-files', methods=['GET'])
+def view_sensitive_files():
+    """Fetches and displays files marked as sensitive."""
+    conn = sqlite3.connect("file_info.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT file_name, analysis_time, sensitive_description FROM sensitive_files")
+    sensitive_files = cursor.fetchall()
+    
+    conn.close()
+    return render_template("sensitiveFiles.html", sensitive_files=sensitive_files)

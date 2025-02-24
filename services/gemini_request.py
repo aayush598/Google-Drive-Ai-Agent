@@ -1,5 +1,8 @@
 import requests
 import json
+import datetime
+import sqlite3
+import re
 
 def fetch_gemini_response(file_names, api_key):
     """
@@ -34,3 +37,73 @@ def fetch_gemini_response(file_names, api_key):
     except requests.exceptions.RequestException as e:
         print(f"Error: {e}")
         return None
+    
+def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
+    """Sends a request to Gemini API to analyze sensitive content in files."""
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
+    
+    prompt = f"""
+    Analyze the content of this file and detect any sensitive data such as:
+    - Personally Identifiable Information (PII) (e.g., names, addresses, phone numbers, emails, SSN)
+    - Financial details (e.g., bank account numbers, credit card details)
+    - Confidential business information (e.g., proprietary data, internal communications)
+
+    If sensitive content is found, return:
+    {{
+        "file_name": "{file_name}",
+        "sensitive": true,
+        "description": "Brief explanation of detected sensitive content."
+    }}
+
+    If no sensitive content is found, return:
+    {{
+        "file_name": "{file_name}",
+        "sensitive": false,
+        "description": "No sensitive information detected."
+    }}
+
+    **STRICT REQUIREMENTS**:
+    - Respond **ONLY** with valid JSON. 
+    - Do **not** add any extra text, explanations, or formatting outside JSON.
+
+    File Content (First 1000 characters for analysis):
+    \"\"\"{file_content[:1000]}\"\"\"
+    """
+
+    request_body = {"contents": [{"parts": [{"text": prompt}]}]}
+
+    try:
+        response = requests.post(url, headers={'Content-Type': 'application/json'}, json=request_body)
+        response.raise_for_status()
+        result_text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
+        
+        # Ensure only valid JSON is extracted
+        json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
+        if json_match:
+            result_text = json_match.group(0)
+
+        sensitive_data = json.loads(result_text)
+        
+        if sensitive_data.get("sensitive"):
+            store_sensitive_data(sensitive_data["file_name"], sensitive_data["description"])
+
+        return sensitive_data
+    except (requests.exceptions.RequestException, json.JSONDecodeError, KeyError) as e:
+        print(f"Error: {e}")
+        return None
+
+
+def store_sensitive_data(file_name, description):
+    """Stores sensitive file details in the database."""
+    conn = sqlite3.connect("file_info.db")
+    cursor = conn.cursor()
+
+    analysis_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute('''
+        INSERT INTO sensitive_files (file_name, analysis_time, sensitive_description)
+        VALUES (?, ?, ?)
+    ''', (file_name, analysis_time, description))
+
+    conn.commit()
+    conn.close()

@@ -33,6 +33,15 @@ def initialize_database():
             UNIQUE(file_id, email_address)
         )
     ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS sensitive_files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_name TEXT,
+            analysis_time TEXT,
+            sensitive_description TEXT
+        )
+    ''')
     
     conn.commit()
     conn.close()
