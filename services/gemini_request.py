@@ -107,3 +107,52 @@ def store_sensitive_data(file_name, description):
 
     conn.commit()
     conn.close()
+
+def fetch_gemini_log_analysis(logs, api_key):
+    """Sends the latest logs to Gemini API for analytics and ensures pure JSON output."""
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
+
+    prompt = f"""
+    Analyze the following API logs and generate meaningful insights:
+    - Identify common API usage patterns.
+    - Detect unusual activities or repeated errors.
+    - Suggest optimizations or improvements.
+
+    **Logs for Analysis (JSON Format):**
+    {json.dumps(logs, indent=2)}
+
+    **STRICT REQUIREMENTS:**  
+    - Respond **ONLY** in valid JSON format.  
+    - Do **NOT** include markdown formatting (```json).  
+    - Do **NOT** add any extra text before or after the JSON response.  
+    - The response **must be a valid JSON object** with the following structure:
+    
+    {{
+        "summary": "A brief summary of the log insights.",
+        "common_patterns": ["Pattern 1", "Pattern 2"],
+        "anomalies_detected": ["Issue 1", "Issue 2"],
+        "recommendations": ["Suggestion 1", "Suggestion 2"]
+    }}
+
+    **Important: Your response should be a JSON object, and nothing else.**
+    """
+
+    request_body = {"contents": [{"parts": [{"text": prompt}]}]}
+
+    try:
+        response = requests.post(url, headers={'Content-Type': 'application/json'}, json=request_body)
+        response.raise_for_status()
+        
+        # Extract text response
+        result_text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
+        
+        # Remove unwanted markdown formatting if present
+        result_text = re.sub(r"```json\n|\n```", "", result_text).strip()
+
+        # Convert to valid JSON
+        json_data = json.loads(result_text)
+        return json_data
+
+    except (requests.exceptions.RequestException, json.JSONDecodeError, KeyError) as e:
+        print(f"Error: {e}")
+        return None

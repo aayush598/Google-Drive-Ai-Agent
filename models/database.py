@@ -42,6 +42,18 @@ def initialize_database():
             sensitive_description TEXT
         )
     ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS api_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            endpoint TEXT,
+            request_method TEXT,
+            request_time TEXT,
+            client_ip TEXT,
+            request_data TEXT,
+            response_data TEXT
+        )
+    ''')
     
     conn.commit()
     conn.close()
