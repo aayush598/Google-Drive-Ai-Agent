@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, send_file
 from controllers.categorize import categorize_files
 from controllers.fetch_content import fetch_all_file_contents
 from controllers.fetch_files import fetch_all_file_names
@@ -9,6 +9,7 @@ from controllers.permissions import fetch_all_permissions, view_permissions
 from services.auth import drive
 from services.logger import log_api_request, fetch_latest_logs, save_log_analysis
 from services.gemini_request import fetch_gemini_log_analysis
+from services.pdf_generator import generate_pdf_from_analysis
 import sqlite3
 import os
 
@@ -96,12 +97,26 @@ def view_logs():
 
 @api_bp.route('/analyze-logs', methods=['GET'])
 def analyze_logs():
-    """Fetches the latest logs, sends them to Gemini, and displays the analysis."""
+    """Fetch logs, analyze with Gemini, and generate a PDF report."""
     logs = fetch_latest_logs()
     analysis = fetch_gemini_log_analysis(logs, API_KEY)
 
     if analysis:
         filename = save_log_analysis(analysis)
-        return render_template("logAnalysis.html", analysis=analysis, filename=filename)
+        
+        # Generate PDF
+        pdf_path = generate_pdf_from_analysis(analysis)
+
+        return render_template("logAnalysis.html", analysis=analysis, filename=filename, pdf_path=pdf_path)
     else:
-        return render_template("logAnalysis.html", analysis=None, filename=None)
+        return render_template("logAnalysis.html", analysis=None, filename=None, pdf_path=None)
+
+@api_bp.route('/download-report', methods=['GET'])
+def download_report():
+    """Serves the generated PDF report for download."""
+    pdf_path = request.args.get("pdf_path")
+
+    if pdf_path and os.path.exists(pdf_path):
+        return send_file(pdf_path, as_attachment=True)
+    else:
+        return "File not found", 404

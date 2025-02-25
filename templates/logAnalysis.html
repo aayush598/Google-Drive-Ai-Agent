@@ -48,6 +48,19 @@
         .home-link:hover {
             background-color: #31b0d5;
         }
+        .download-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -89,7 +102,12 @@
 
             <div class="box">
                 <h3>Download Report</h3>
-                <p>Your report has been saved as <strong>{{ filename }}</strong>.</p>
+                {% if pdf_path %}
+                    <p>Your report has been saved as <strong>{{ filename }}</strong>.</p>
+                    <a href="{{ url_for('api.download_report', pdf_path=pdf_path) }}" class="download-btn">Download PDF</a>
+                {% else %}
+                    <p>No report available.</p>
+                {% endif %}
             </div>
 
         {% else %}
