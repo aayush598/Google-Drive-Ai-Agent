@@ -6,3 +6,4 @@ config
 __pycache__
 *.pdf
 *.txt
+*.json

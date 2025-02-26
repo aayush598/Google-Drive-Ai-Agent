@@ -3,7 +3,7 @@ from controllers.categorize import categorize_files
 from controllers.fetch_content import fetch_all_file_contents
 from controllers.fetch_files import fetch_all_file_names
 from controllers.search import search_files_by_category
-from controllers.move_file import move_files_to_documents
+from controllers.move_file import move_selected_files, fetch_files_for_move
 from controllers.rename_file import rename_files_endpoint
 from controllers.permissions import fetch_all_permissions, view_permissions
 from services.auth import drive
@@ -49,11 +49,11 @@ def search():
     log_api_request("/search", response)
     return jsonify({'files': files})
 
-@api_bp.route('/move-files', methods=['GET'])
-def move_files():
-    result = move_files_to_documents()
-    log_api_request("/move-files", result)
-    return render_template('moveFiles.html', files_moved=result["files_moved"])
+# @api_bp.route('/move-files', methods=['GET'])
+# def move_files():
+#     result = move_files_to_documents()
+#     log_api_request("/move-files", result)
+#     return render_template('moveFiles.html', files_moved=result["files_moved"])
 
 @api_bp.route('/rename-files', methods=['GET'])
 def rename_files():
@@ -120,3 +120,22 @@ def download_report():
         return send_file(pdf_path, as_attachment=True)
     else:
         return "File not found", 404
+    
+
+@api_bp.route('/get-move-files', methods=['GET'])
+def get_move_files():
+    """Fetch files available for moving."""
+    files = fetch_files_for_move()
+    return render_template('confirmMove.html', files=files)
+
+@api_bp.route('/move-selected-files', methods=['POST'])
+def move_selected():
+    """Move only the selected files."""
+    data = request.get_json()
+    selected_file_ids = data.get("selected_files", [])
+
+    if not selected_file_ids:
+        return jsonify({"message": "No files selected for moving."})
+
+    result = move_selected_files(selected_file_ids)
+    return jsonify(result)
