@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Dashboard</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script>
+        function triggerAction(apiEndpoint, successMessage, isHTML = false) {
+            fetch(apiEndpoint, { method: "GET" })
+                .then(response => {
+                    if (isHTML) {
+                        return response.text(); // Handle HTML response
+                    } else {
+                        return response.json(); // Handle JSON response
+                    }
+                })
+                .then(data => {
+                    if (isHTML) {
+                        document.getElementById("output").innerHTML = data; // Render HTML page content
+                    } else {
+                        document.getElementById("output").innerHTML = 
+                            `<h3>${successMessage}</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("output").innerHTML = "<h3>An error occurred!</h3>";
+                    console.error(error);
+                });
+        }
+    
+        function toggleAccordion(sectionId) {
+            var section = document.getElementById(sectionId);
+            if (section) {  // Check if the element exists
+                section.style.display = (section.style.display === "none" || section.style.display === "") ? "block" : "none";
+            } else {
+                console.error("Element with ID '" + sectionId + "' not found.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome to the Main Dashboard</h2>
+
+        <button onclick="triggerAction('/categorize', 'Files Categorized Successfully!')">Categorize Files</button>
+        <button onclick="triggerAction('/fetch-content', 'File Content Retrieved!', true)">View File Content</button>
+        <button onclick="triggerAction('/fetch-files', 'Fetched All Files!')">Fetch All Files</button>
+        <button onclick="triggerAction('/get-move-files', 'Files Ready for Moving!', true)">Move Files</button>
+        <button onclick="triggerAction('/rename-files', 'Files Renamed Successfully!', true)">Rename Files</button>
+        <button onclick="triggerAction('/view-permissions', 'File Permissions Retrieved!', true)">View File Permissions</button>
+        <button onclick="triggerAction('/sensitive-files', 'Sensitive Files Retrieved!', true)">View Sensitive Files</button>
+        <button onclick="triggerAction('/analyze-logs', 'Log Analysis Completed!')">Analyze Logs</button>
+        <button onclick="triggerAction('/logs', 'Logs Retrieved!', true)">View Logs</button>
+
+        <div id="output" class="output-box">
+            <h3>Output will appear here...</h3>
+        </div>
+    </div>
+</body>
+</html>

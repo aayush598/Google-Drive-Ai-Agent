@@ -201,3 +201,18 @@ tr:hover {
 .home-link:hover {
     background-color: #31b0d5;
 }
+
+.output-box {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

@@ -139,3 +139,8 @@ def move_selected():
 
     result = move_selected_files(selected_file_ids)
     return jsonify(result)
+
+@api_bp.route('/dashboard', methods=['GET'])
+def dashboard():
+    """Render the main dashboard."""
+    return render_template("dashboard.html")
