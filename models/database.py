@@ -39,7 +39,11 @@ def initialize_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             file_name TEXT,
             analysis_time TEXT,
-            sensitive_description TEXT
+            description TEXT,
+            risk_level TEXT,
+            category TEXT,
+            examples TEXT,
+            remediation TEXT
         )
     ''')
 

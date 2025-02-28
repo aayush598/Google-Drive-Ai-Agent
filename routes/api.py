@@ -78,7 +78,7 @@ def view_sensitive_files():
     """Fetches and displays files marked as sensitive."""
     conn = sqlite3.connect("file_info.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT file_name, analysis_time, sensitive_description FROM sensitive_files")
+    cursor.execute("SELECT file_name, analysis_time, description, risk_level, category, examples, remediation FROM sensitive_files")
     sensitive_files = cursor.fetchall()
     conn.close()
     response = {"sensitive_files": sensitive_files}
