@@ -59,7 +59,7 @@ def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
        - NDAs, classified government documents, regulatory compliance risks  
     6️⃣ **Healthcare & Insurance Data (HIPAA-related)**  
        - Medical records, patient IDs, insurance numbers  
-       
+
     If sensitive content is found, return:
     {{
         "file_name": "{file_name}",
@@ -133,11 +133,16 @@ def store_sensitive_data(file_name, description, risk_level, category, examples,
     examples_json = json.dumps(examples) if isinstance(examples, list) else examples
     remediation_json = json.dumps(remediation) if isinstance(remediation, list) else remediation
 
-    cursor.execute('''
-        INSERT INTO sensitive_files (file_name, analysis_time, description, risk_level, category, examples, remediation)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (file_name, analysis_time, description, risk_level, category_json, examples_json, remediation_json))
+    # Check if the file already exists in the database
+    cursor.execute("SELECT COUNT(*) FROM sensitive_files WHERE file_name = ?", (file_name,))
+    exists = cursor.fetchone()[0]
 
+    if exists == 0:
+        cursor.execute('''
+            INSERT INTO sensitive_files (file_name, analysis_time, description, risk_level, category, examples, remediation)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (file_name, analysis_time, description, risk_level, category_json, examples_json, remediation_json))
+        conn.commit()
     conn.commit()
     conn.close()
 
