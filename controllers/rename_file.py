@@ -78,4 +78,4 @@ def rename_files_endpoint():
                 conn.commit()
     
     conn.close()
-    return render_template("renameFile.html", renamed_files=renamed_files)
+    return renamed_files
