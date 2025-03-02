@@ -46,5 +46,8 @@ def move_selected_files(file_ids):
         moved_files.append(file["title"])
 
     result = {"message": f"Moved {len(moved_files)} files to Documents folder.", "files_moved": moved_files}
-    log_api_request("/move-files", result)
+    
+    # Modify log function to work without Flask request context
+    # log_api_request("/move-files", str(result))  
+
     return result

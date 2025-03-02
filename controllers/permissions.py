@@ -31,14 +31,37 @@ def fetch_permissions(file_id,drive):
         print(f"Error fetching permissions for {file_id}: {e}")
         return []
 
-@permissions_bp.route("/fetch-permissions", methods=["GET"])
+# @permissions_bp.route("/fetch-permissions", methods=["GET"])
+# def fetch_all_permissions(drive):
+#     """Fetches permissions for all files and stores them in SQLite."""
+#     cursor.execute("SELECT file_id FROM files")
+#     file_ids = [row[0] for row in cursor.fetchall()]
+
+#     for file_id in file_ids:
+#         permissions = fetch_permissions(file_id,drive)
+#         for permission in permissions:
+#             email = permission.get('emailAddress', 'N/A')
+#             role = permission.get('role', 'N/A')
+#             perm_type = permission.get('type', 'N/A')
+
+#             cursor.execute('''
+#                 INSERT OR IGNORE INTO permissions (file_id, email_address, role, type)
+#                 VALUES (?, ?, ?, ?)
+#             ''', (file_id, email, role, perm_type))
+#             conn.commit()
+
+#     return jsonify({"message": "Permissions updated successfully!"})
+
+
 def fetch_all_permissions(drive):
     """Fetches permissions for all files and stores them in SQLite."""
     cursor.execute("SELECT file_id FROM files")
     file_ids = [row[0] for row in cursor.fetchall()]
-
+    
+    all_permissions = []
+    
     for file_id in file_ids:
-        permissions = fetch_permissions(file_id,drive)
+        permissions = fetch_permissions(file_id, drive)
         for permission in permissions:
             email = permission.get('emailAddress', 'N/A')
             role = permission.get('role', 'N/A')
@@ -50,7 +73,15 @@ def fetch_all_permissions(drive):
             ''', (file_id, email, role, perm_type))
             conn.commit()
 
-    return jsonify({"message": "Permissions updated successfully!"})
+            all_permissions.append({
+                "file_id": file_id,
+                "email_address": email,
+                "role": role,
+                "type": perm_type
+            })
+
+    return all_permissions  # Return Python dictionary instead of `jsonify()`
+
 
 @permissions_bp.route("/view-permissions", methods=["GET"])
 def view_permissions():
