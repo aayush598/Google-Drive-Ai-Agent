@@ -1,7 +1,6 @@
 import sqlite3
 import datetime
 import json
-from flask import request
 
 def log_api_request(endpoint, request_method, request_data, response_data, client_ip="127.0.0.1"):
     """Logs API requests and responses in the database (for Streamlit & Flask)."""
