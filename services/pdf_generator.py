@@ -5,7 +5,7 @@ import os
 
 def generate_pdf_from_analysis(analysis, filename="log_analysis.pdf"):
     """Creates a well-formatted PDF report from the log analysis."""
-    pdf_path = os.path.join("static", "reports", filename)
+    pdf_path = f"reports\{filename}"    
 
     # Ensure the directory exists
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
