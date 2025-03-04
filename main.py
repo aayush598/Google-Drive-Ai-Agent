@@ -6,7 +6,7 @@ st.set_page_config(page_title="Google Drive AI Agent", layout="wide")
 st.sidebar.title("Navigation")
 page = st.sidebar.selectbox(
     "Select a feature:",
-    ["Home", "Categorize Files", "Fetch File Content", "Search Files", "Rename Files", "Manage Permissions", "Move Files", "View Logs", "Sensitive Files", "Log Analysis"]
+    ["Home", "Categorize Files",  "Search Files", "Rename Files", "Manage Permissions", "Move Files", "View Logs", "Sensitive Files", "Log Analysis"]
 )
 
 # Redirect to the selected page
@@ -15,8 +15,6 @@ if page == "Home":
     st.write("Welcome to the AI-powered file management system!")
 elif page == "Categorize Files":
     st.switch_page("pages/categorize.py")
-elif page == "Fetch File Content":
-    st.switch_page("pages/fetch_content.py")
 elif page == "Search Files":
     st.switch_page("pages/search.py")
 elif page == "Rename Files":

@@ -20,7 +20,8 @@ def fetch_gemini_rename(file_name, file_content, api_key):
     
     prompt = f"""
     Based on the content of the following file, suggest a concise and meaningful file name (max 2 words).
-    Use underscores instead of spaces, and retain the original file format.
+    Use underscores instead of spaces, and retain the original file format. File name is provided with the file type
+    for example file test.pdf here .pdf is the extension.
     Provide results in valid JSON format: {{"old_name": "<old_filename>", "new_name": "<new_filename>"}}.
     File: {file_name}
     Content: {file_content[:500]}...

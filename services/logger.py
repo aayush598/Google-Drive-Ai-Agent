@@ -3,15 +3,13 @@ import datetime
 import json
 from flask import request
 
-def log_api_request(endpoint, response_data):
-    """Logs API requests and responses in the database."""
+def log_api_request(endpoint, request_method, request_data, response_data, client_ip="127.0.0.1"):
+    """Logs API requests and responses in the database (for Streamlit & Flask)."""
     conn = sqlite3.connect("file_info.db")
     cursor = conn.cursor()
 
     request_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    request_method = request.method
-    client_ip = request.remote_addr
-    request_data = json.dumps(request.get_json()) if request.is_json else "No JSON Data"
+    request_data = json.dumps(request_data) if isinstance(request_data, dict) else str(request_data)
     response_data = json.dumps(response_data) if isinstance(response_data, dict) else str(response_data)
 
     cursor.execute('''
@@ -21,7 +19,7 @@ def log_api_request(endpoint, response_data):
 
     conn.commit()
     conn.close()
-
+    
 def fetch_latest_logs(limit=10):
     """Fetch the latest logs from the database."""
     conn = sqlite3.connect("file_info.db")

@@ -5,6 +5,9 @@ from services.process_gemini_response import process_gemini_response
 from controllers.duplicate import find_duplicates
 from controllers.deleteFile import delete_files_and_folders
 from controllers.fetch_files import fetch_all_file_names
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def categorize_files(drive):
     """

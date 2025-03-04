@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
+from services.logger import log_api_request
 
 st.set_page_config(page_title="Sensitive Files", layout="wide")
 st.title("🔒 Sensitive Files Report")
@@ -15,6 +16,13 @@ def fetch_sensitive_files():
     return sensitive_files
 
 sensitive_files = fetch_sensitive_files()
+
+log_api_request(
+    endpoint="/view-sensitive-files",
+    request_method="GET",
+    request_data={"action": "fetch_sensitive_files"},
+    response_data={"total_sensitive_files": len(sensitive_files)}
+)
 
 if sensitive_files:
     st.subheader("📜 Files Marked as Sensitive")

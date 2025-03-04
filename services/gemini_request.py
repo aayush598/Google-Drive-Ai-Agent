@@ -38,7 +38,7 @@ def fetch_gemini_response(file_names, api_key):
         print(f"Error: {e}")
         return None
     
-def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
+def fetch_gemini_sensitive_analysis(file_name, file_id, file_content, api_key):
     """Sends a request to Gemini API to analyze sensitive content in files."""
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
     
@@ -63,6 +63,7 @@ def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
     If sensitive content is found, return:
     {{
         "file_name": "{file_name}",
+        "file_id": "{file_id}",
         "sensitive": true,
         "description": "Detailed explanation of detected sensitive content.",
         "category": ["PII", "Financial", "Security", "Business", "Legal", "Healthcare"],
@@ -74,6 +75,7 @@ def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
     If no sensitive content is found, return:
     {{
         "file_name": "{file_name}",
+        "file_id": "{file_id}",
         "sensitive": false,
         "description": "No sensitive information detected.",
         "risk_level": "None"
@@ -107,6 +109,7 @@ def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
         
         if sensitive_data.get("sensitive"):
             store_sensitive_data(
+                sensitive_data["file_id"],
                 sensitive_data["file_name"], 
                 sensitive_data["description"], 
                 sensitive_data.get("risk_level", "Unknown"),
@@ -121,7 +124,7 @@ def fetch_gemini_sensitive_analysis(file_name, file_content, api_key):
         return None
 
 
-def store_sensitive_data(file_name, description, risk_level, category, examples, remediation):
+def store_sensitive_data(file_id, file_name, description, risk_level, category, examples, remediation):
     """Stores sensitive file details in the database, ensuring lists are stored as JSON strings."""
     conn = sqlite3.connect("file_info.db")
     cursor = conn.cursor()
@@ -134,14 +137,14 @@ def store_sensitive_data(file_name, description, risk_level, category, examples,
     remediation_json = json.dumps(remediation) if isinstance(remediation, list) else remediation
 
     # Check if the file already exists in the database
-    cursor.execute("SELECT COUNT(*) FROM sensitive_files WHERE file_name = ?", (file_name,))
+    cursor.execute("SELECT COUNT(*) FROM sensitive_files WHERE file_id = ?", (file_id,))
     exists = cursor.fetchone()[0]
 
     if exists == 0:
         cursor.execute('''
-            INSERT INTO sensitive_files (file_name, analysis_time, description, risk_level, category, examples, remediation)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (file_name, analysis_time, description, risk_level, category_json, examples_json, remediation_json))
+            INSERT INTO sensitive_files (file_id,file_name, analysis_time, description, risk_level, category, examples, remediation)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (file_id, file_name, analysis_time, description, risk_level, category_json, examples_json, remediation_json))
         conn.commit()
     conn.commit()
     conn.close()

@@ -2,12 +2,21 @@ import streamlit as st
 import pandas as pd
 from controllers.categorize import categorize_files
 from services.auth import drive
+from services.logger import log_api_request
 
 st.set_page_config(page_title="Categorize Files", layout="wide")
 st.title("📂 Categorize Files")
 
 if st.button("Categorize Files using Gemini AI"):
     result = categorize_files(drive)
+
+    log_api_request(
+        endpoint="/categorize-files",
+        request_method="POST",
+        request_data={"action": "categorize_files"},
+        response_data=result
+    )
+
     categorized_data = result.get("categorized_data", {})
     duplicates = result.get("duplicates", {})
 

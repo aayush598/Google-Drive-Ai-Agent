@@ -21,8 +21,3 @@ if logs:
                 st.json(parsed_response)
             except json.JSONDecodeError:
                 st.write(f"**Response Data:** {log['response_data'][:200]}...")
-
-if st.button("Generate Log Analysis PDF"):
-    analysis = generate_pdf_from_analysis(logs)
-    st.success("📄 PDF Report Generated!")
-    st.download_button("📥 Download Report", analysis, file_name="log_analysis.pdf")

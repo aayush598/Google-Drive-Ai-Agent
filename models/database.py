@@ -37,6 +37,7 @@ def initialize_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sensitive_files (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_id TEXT UNIQUE,
             file_name TEXT,
             analysis_time TEXT,
             description TEXT,

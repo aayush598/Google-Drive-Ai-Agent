@@ -33,6 +33,18 @@ def fetch_all_file_names(drive):
     cursor.execute("SELECT file_id FROM files WHERE file_id IN ({})".format(','.join('?' * len(file_ids))), file_ids)
     existing_files = {row[0] for row in cursor.fetchall()}
     
+    # Fetch existing file IDs from database
+    cursor.execute("SELECT file_id FROM files")
+    existing_file_ids = {row[0] for row in cursor.fetchall()}
+
+    # Delete entries from the database that are no longer in Google Drive
+    files_to_delete = existing_file_ids - set(file_ids)
+    if files_to_delete:
+        cursor.execute(f"DELETE FROM files WHERE file_id IN ({','.join(['?'] * len(files_to_delete))})", tuple(files_to_delete))
+        conn.commit()
+        print(f"Deleted {len(files_to_delete)} outdated file records from the database.")
+
+
     for file_item in file_list:
         file_id = file_item['id']
         file_name = file_item['title']

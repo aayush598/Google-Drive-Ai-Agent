@@ -35,7 +35,7 @@ def fetch_all_file_contents():
     file_contents = []
     for file_id, file_name, mime_type in files:
         content = extract_content(file_id, file_name, mime_type, drive)
-        sensitive_analysis = fetch_gemini_sensitive_analysis(file_name, content, API_KEY)
+        sensitive_analysis = fetch_gemini_sensitive_analysis(file_name, file_id,content, API_KEY)
         if sensitive_analysis and sensitive_analysis.get("sensitive"):
             print(f"Sensitive content detected in {file_name}: {sensitive_analysis['description']}")
         file_contents.append({"file_name": file_name, "content": content})
